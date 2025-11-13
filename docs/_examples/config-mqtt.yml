@@ -1,0 +1,21 @@
+
+multiplexer:
+  collectors:
+    - name: tap
+      dnstap:
+        listen-ip: 0.0.0.0
+        listen-port: 6000
+
+  loggers:
+    - name: mqtt-logger
+      mqtt:
+        remote-address: "127.0.0.1"
+        remote-port: 1883
+        topic: "dns/logs"
+        qos: 1
+        protocol-version: "auto"
+        mode: "flat-json"
+
+  routes:
+    - from: [ tap ]
+      to: [ mqtt-logger ]

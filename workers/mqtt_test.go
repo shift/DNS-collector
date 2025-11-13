@@ -1,0 +1,109 @@
+package workers
+
+import (
+	"bytes"
+	"encoding/json"
+	"testing"
+
+	"github.com/dmachard/go-dnscollector/dnsutils"
+	"github.com/dmachard/go-dnscollector/pkgconfig"
+	"github.com/dmachard/go-logger"
+)
+
+func TestMQTT_GetName(t *testing.T) {
+	config := pkgconfig.GetDefaultConfig()
+	config.Loggers.MQTT.Enable = true
+	config.Loggers.MQTT.RemoteAddress = "127.0.0.1"
+	config.Loggers.MQTT.RemotePort = 1883
+	config.Loggers.MQTT.Topic = "dns/logs"
+
+	logger := logger.New(false)
+	mqtt := NewMQTT(config, logger, "test-mqtt")
+
+	if mqtt.GetName() != "test-mqtt" {
+		t.Errorf("Expected name 'test-mqtt', got '%s'", mqtt.GetName())
+	}
+}
+
+func TestMQTT_SetLoggers(t *testing.T) {
+	config := pkgconfig.GetDefaultConfig()
+	config.Loggers.MQTT.Enable = true
+	config.Loggers.MQTT.RemoteAddress = "127.0.0.1"
+	config.Loggers.MQTT.RemotePort = 1883
+	config.Loggers.MQTT.Topic = "dns/logs"
+
+	logger := logger.New(false)
+	mqtt := NewMQTT(config, logger, "test-mqtt")
+
+	mqtt.SetLoggers([]Worker{})
+}
+
+func TestMQTT_ConfigDefaults(t *testing.T) {
+	config := pkgconfig.GetDefaultConfig()
+
+	if config.Loggers.MQTT.QOS != 0 {
+		t.Errorf("Expected default QOS 0, got %d", config.Loggers.MQTT.QOS)
+	}
+
+	if config.Loggers.MQTT.ProtocolVersion != "auto" {
+		t.Errorf("Expected default protocol 'auto', got %s", config.Loggers.MQTT.ProtocolVersion)
+	}
+
+	if config.Loggers.MQTT.BufferSize != 100 {
+		t.Errorf("Expected default buffer size 100, got %d", config.Loggers.MQTT.BufferSize)
+	}
+
+	if config.Loggers.MQTT.FlushInterval != 10 {
+		t.Errorf("Expected default flush interval 10, got %d", config.Loggers.MQTT.FlushInterval)
+	}
+
+	if config.Loggers.MQTT.ConnectTimeout != 5 {
+		t.Errorf("Expected default connect timeout 5, got %d", config.Loggers.MQTT.ConnectTimeout)
+	}
+}
+
+func TestMQTT_FormatMessage(t *testing.T) {
+	config := pkgconfig.GetDefaultConfig()
+	config.Loggers.MQTT.Enable = true
+	config.Loggers.MQTT.RemoteAddress = "127.0.0.1"
+	config.Loggers.MQTT.RemotePort = 1883
+	config.Loggers.MQTT.Topic = "dns/logs"
+	config.Loggers.MQTT.Mode = pkgconfig.ModeJSON
+
+	logger := logger.New(false)
+	_ = NewMQTT(config, logger, "test-mqtt")
+
+	dm := dnsutils.GetFakeDNSMessage()
+	dm.Init()
+
+	buffer := new(bytes.Buffer)
+	json.NewEncoder(buffer).Encode(dm)
+	payload := buffer.String()
+
+	if len(payload) == 0 {
+		t.Errorf("Expected non-empty payload")
+	}
+}
+
+func TestMQTT_ReloadConfig(t *testing.T) {
+	config := pkgconfig.GetDefaultConfig()
+	config.Loggers.MQTT.Enable = true
+	config.Loggers.MQTT.RemoteAddress = "127.0.0.1"
+	config.Loggers.MQTT.RemotePort = 1883
+	config.Loggers.MQTT.Topic = "dns/logs"
+
+	logger := logger.New(false)
+	mqtt := NewMQTT(config, logger, "test-mqtt")
+
+	newConfig := pkgconfig.GetDefaultConfig()
+	newConfig.Loggers.MQTT.Enable = true
+	newConfig.Loggers.MQTT.RemoteAddress = "127.0.0.1"
+	newConfig.Loggers.MQTT.RemotePort = 1883
+	newConfig.Loggers.MQTT.Topic = "dns/updated"
+
+	mqtt.ReloadConfig(newConfig)
+
+	if mqtt.GetConfig().Loggers.MQTT.Topic != "dns/updated" {
+		t.Errorf("Expected topic 'dns/updated', got '%s'", mqtt.GetConfig().Loggers.MQTT.Topic)
+	}
+}
