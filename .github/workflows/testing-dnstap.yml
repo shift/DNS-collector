@@ -18,7 +18,7 @@ permissions:
   contents: read
 
 env:
-  Q_VERSION: "0.19.2"
+  Q_VERSION: "0.19.11"
   PYTHON_VERSION: "3.13"
   GO_VERSION: "1.24"
   COLLECTOR_USER: "pdns"
@@ -78,7 +78,7 @@ jobs:
   
       - name: Download q test doq test
         run: |
-          wget https://github.com/natesales/q/releases/download/v0.19.2/q_${{ env.Q_VERSION }}_linux_amd64.tar.gz
+          wget https://github.com/natesales/q/releases/download/v${{ env.Q_VERSION }}/q_${{ env.Q_VERSION }}_linux_amd64.tar.gz
           tar xvf q_${{ env.Q_VERSION }}_linux_amd64.tar.gz
   
       - name: Generate certificate
