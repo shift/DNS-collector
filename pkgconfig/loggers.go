@@ -343,7 +343,7 @@ type ConfigLoggers struct {
 		TextFormat        string `yaml:"text-format" default:""`
 		BufferSize        int    `yaml:"buffer-size" default:"100"`
 		FlushInterval     int    `yaml:"flush-interval" default:"30"`
-		ProtocolVersion   string `yaml:"protocol-version" default:"v5"`
+		ProtocolVersion   string `yaml:"protocol-version" default:"auto"`
 		Username          string `yaml:"username" default:""`
 		Password          string `yaml:"password" default:""`
 		TLSSupport        bool   `yaml:"tls-support" default:"false"`
