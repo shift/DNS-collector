@@ -18,16 +18,16 @@ permissions:
   contents: read
 
 env:
-  Q_VERSION: "0.19.2"
-  PYTHON_VERSION: "3.13"
-  GO_VERSION: "1.24"
+  Q_VERSION: "0.19.11"
+  PYTHON_VERSION: "3.14"
+  GO_VERSION: "1.25"
   COLLECTOR_USER: "pdns"
 
 jobs:
   build_bin:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: actions/setup-go@v6
         with:
           go-version: "${{ env.GO_VERSION }}"
@@ -48,9 +48,9 @@ jobs:
     strategy:
       matrix:
         config:
-          - { service: "unbound", version: "1.24.1", mode: "tcp" }
-          - { service: "coredns", version: "1.11.1", mode: "tcp" }
-          - { service: "coredns", version: "1.11.1", mode: "tls" }
+          - { service: "unbound", version: "1.24.2", mode: "tcp" }
+          - { service: "coredns", version: "1.13.1", mode: "tcp" }
+          - { service: "coredns", version: "1.13.1", mode: "tls" }
           - { service: "coredns", version: "1.12.1", mode: "tcp" }
           - { service: "coredns", version: "1.12.1", mode: "tls" }
           - { service: "dnsdist", version: "19", mode: "tcp" }
@@ -58,11 +58,11 @@ jobs:
           - { service: "dnsdist", version: "19", mode: "doq" }
           - { service: "dnsdist2", version: "20", mode: "tcp" }
           - { service: "dnsdist2", version: "20", mode: "doq" }
-          - { service: "knotresolver", version: "6.0.11", mode: "unix" }
+          - { service: "knotresolver", version: "6.0.16", mode: "unix" }
           #- { service: "bind9", version: "9.18.33-r0", mode: "unix" }
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - uses: actions/setup-python@v6
         with:
@@ -78,7 +78,7 @@ jobs:
   
       - name: Download q test doq test
         run: |
-          wget https://github.com/natesales/q/releases/download/v0.19.2/q_${{ env.Q_VERSION }}_linux_amd64.tar.gz
+          wget https://github.com/natesales/q/releases/download/v${{ env.Q_VERSION }}/q_${{ env.Q_VERSION }}_linux_amd64.tar.gz
           tar xvf q_${{ env.Q_VERSION }}_linux_amd64.tar.gz
   
       - name: Generate certificate
