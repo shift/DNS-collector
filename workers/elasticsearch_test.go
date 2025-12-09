@@ -19,6 +19,7 @@ import (
 )
 
 const (
+	testUser     = "testuser"
 	testPassword = "testpass"
 )
 
@@ -202,10 +203,10 @@ func Test_ElasticSearchClient_sendBulk_WithBasicAuth(t *testing.T) {
 		// Verify that the Authorization header is present
 		username, password, ok := r.BasicAuth()
 		assert.True(t, ok, "Basic Auth header is missing in the request")
-		assert.Equal(t, "testuser", username, "Incorrect username")
+		assert.Equal(t, testUser, username, "Incorrect username")
 		assert.Equal(t, testPassword, password, "Incorrect password")
 
-		if username != "testuser" || password != testPassword {
+		if username != testUser || password != testPassword {
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
@@ -217,7 +218,7 @@ func Test_ElasticSearchClient_sendBulk_WithBasicAuth(t *testing.T) {
 	config := pkgconfig.GetDefaultConfig()
 	config.Loggers.ElasticSearchClient.Server = server.URL
 	config.Loggers.ElasticSearchClient.BasicAuthEnabled = true
-	config.Loggers.ElasticSearchClient.BasicAuthLogin = "testuser"
+	config.Loggers.ElasticSearchClient.BasicAuthLogin = testUser
 	config.Loggers.ElasticSearchClient.BasicAuthPwd = testPassword
 
 	client := NewElasticSearchClient(config, logger.New(false), "test-client")
