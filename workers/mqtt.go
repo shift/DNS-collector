@@ -16,6 +16,10 @@ import (
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 )
 
+const (
+	mqttProtocolAuto = "auto"
+)
+
 type MQTT struct {
 	*GenericWorker
 	textFormat               []string
@@ -56,7 +60,7 @@ func (w *MQTT) ReadConfig() {
 	}
 
 	protocolVersion := strings.ToLower(w.GetConfig().Loggers.MQTT.ProtocolVersion)
-	if protocolVersion != "v3" && protocolVersion != "v5" && protocolVersion != "auto" {
+	if protocolVersion != "v3" && protocolVersion != "v5" && protocolVersion != mqttProtocolAuto {
 		w.LogFatal(pkgconfig.PrefixLogWorker + "[" + w.GetName() + "]mqtt - invalid protocol version, must be v3, v5, or auto")
 	}
 }
@@ -111,7 +115,7 @@ func (w *MQTT) ConnectToMQTT() {
 			opts.SetProtocolVersion(3)
 		case "v5":
 			opts.SetProtocolVersion(5)
-		case "auto":
+		case mqttProtocolAuto:
 			opts.SetProtocolVersion(0)
 		}
 

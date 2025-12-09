@@ -18,6 +18,10 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+const (
+	testPassword = "testpass"
+)
+
 func Test_ElasticSearchClient_BulkSize_Exceeded(t *testing.T) {
 
 	testcases := []struct {
@@ -199,9 +203,9 @@ func Test_ElasticSearchClient_sendBulk_WithBasicAuth(t *testing.T) {
 		username, password, ok := r.BasicAuth()
 		assert.True(t, ok, "Basic Auth header is missing in the request")
 		assert.Equal(t, "testuser", username, "Incorrect username")
-		assert.Equal(t, "testpass", password, "Incorrect password")
+		assert.Equal(t, testPassword, password, "Incorrect password")
 
-		if username != "testuser" || password != "testpass" {
+		if username != "testuser" || password != testPassword {
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
@@ -214,7 +218,7 @@ func Test_ElasticSearchClient_sendBulk_WithBasicAuth(t *testing.T) {
 	config.Loggers.ElasticSearchClient.Server = server.URL
 	config.Loggers.ElasticSearchClient.BasicAuthEnabled = true
 	config.Loggers.ElasticSearchClient.BasicAuthLogin = "testuser"
-	config.Loggers.ElasticSearchClient.BasicAuthPwd = "testpass"
+	config.Loggers.ElasticSearchClient.BasicAuthPwd = testPassword
 
 	client := NewElasticSearchClient(config, logger.New(false), "test-client")
 
